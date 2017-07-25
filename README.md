@@ -1,6 +1,12 @@
 # Item Creator
 ### Extension is under development and is not ready to use yet!
 
+### Model code
+![Model Code](https://github.com/rlewicki/unity-item-creator/Screenshots/code.png)
+
+### Inspector look
+![Inspector](https://github.com/rlewicki/unity-item-creator/Screenshots/inspector.png)
+
 ### Description
 Item Creator is a Unity extension that enables user to easly create his item data and save it to `json` file (I have plans for creating reader that will read all items into actual game in the future).
 
