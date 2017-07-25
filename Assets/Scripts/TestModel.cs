@@ -1,6 +1,6 @@
 ﻿[System.Serializable]
-public class TestModel
+public class TestModel : BaseModel
 {
-    public int Counter { get; set; }
+    public string Counter { get; set; }
     public string ThisIsVeryLongTestName { get; set; }
 }

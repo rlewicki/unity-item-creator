@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using LitJson;
 
 public class ItemCreator : EditorWindow
 {
@@ -13,8 +13,9 @@ public class ItemCreator : EditorWindow
 
     private Object                      _model          = null;
     private Object                      _currentModel   = null;
-    private List<string>                _fieldValues    = new List<string>();
+    private List<string>                _keys           = new List<string>();
     private Dictionary<string, string>  _values         = new Dictionary<string, string>();
+    private Dictionary<string, System.Type> _types      = new Dictionary<string, System.Type>();
 
     private void OnGUI()
     {
@@ -42,13 +43,15 @@ public class ItemCreator : EditorWindow
             var scriptClass = script.GetClass();
             Debug.Assert(scriptClass.GetProperties().Length != 0);
 
+            _keys.Clear();
             _values.Clear();
-            _fieldValues.Clear();
+            _types.Clear();
             foreach (var property in scriptClass.GetProperties())
             {
                 var propertyKey = $"{property.Name} ({property.PropertyType})";
-                _fieldValues.Add(propertyKey);
+                _keys.Add(propertyKey);
                 _values.Add(propertyKey, "");
+                _types.Add(propertyKey, property.PropertyType);
             }
         }
     }
@@ -56,7 +59,7 @@ public class ItemCreator : EditorWindow
     private void AssignPropertiesValues()
     {
         EditorGUIUtility.labelWidth = 250;
-        foreach(var key in _fieldValues)
+        foreach(var key in _keys)
         {
             _values[key] = EditorGUILayout.TextField(key, _values[key]);
         }
@@ -66,7 +69,7 @@ public class ItemCreator : EditorWindow
     {
         if(GUILayout.Button("Create item", GUILayout.MinHeight(40)))
         {
-            foreach(var key in _fieldValues)
+            foreach(var key in _keys)
             {
                 if(_values[key] == "")
                 {
@@ -90,6 +93,23 @@ public class ItemCreator : EditorWindow
 
     private void CreateItem()
     {
+        var script          = _model as MonoScript;
+        var type            = script.GetClass();
+        var objectInstance  = System.Activator.CreateInstance(type);
+        var finalObject     = System.Convert.ChangeType(objectInstance, type);
+        var model           = (IModel)finalObject;
 
+        string[] values = new string[_values.Count];
+        int i = 0;
+
+        foreach(var key in _keys)
+        {
+            values[i] = _values[key];
+            i++;
+        }
+
+        model.SetValues(values);
+        var jsonText = JsonMapper.ToJson(model);
+        Debug.Log(jsonText);
     }
 }

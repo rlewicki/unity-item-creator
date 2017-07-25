@@ -1,7 +1,7 @@
 ﻿[System.Serializable]
-public class CarModel
+public class CarModel : BaseModel
 {
     public string Name { get; set; }
     public string OwnerName { get; set; }
-    public int ProductionYear { get; set; }
+    public string ProductionYear { get; set; }
 }
